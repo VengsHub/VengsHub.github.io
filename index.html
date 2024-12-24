@@ -1,33 +1,133 @@
-<!doctype html>
-<html class="no-js" lang="">
-
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title></title>
-  <link rel="stylesheet" href="css/style.css">
-  <meta name="description" content="">
-
-  <meta property="og:title" content="">
-  <meta property="og:type" content="">
-  <meta property="og:url" content="">
-  <meta property="og:image" content="">
-  <meta property="og:image:alt" content="">
-
-  <link rel="icon" href="/favicon.ico" sizes="any">
-  <link rel="icon" href="/icon.svg" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="icon.png">
-
-  <link rel="manifest" href="site.webmanifest">
-  <meta name="theme-color" content="#fafafa">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Lightbulbs</title>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <style>
+    body {
+      background-color: black;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(31, 15px);
+      grid-gap: 30px; /* Spacing between bulbs */
+    }
+    .bulb {
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%,
+      rgba(255, 255, 255, 0.8), /* Shiny highlight */
+      rgba(255, 255, 150, 1), /* Warm bulb core */
+      rgba(255, 200, 50, 0.8) 70%, /* Outer glow */
+      rgba(0, 0, 0, 0.7) 100%); /* Dark edge */
+      box-shadow:
+        0 0 5px 2px rgba(255, 255, 200, 0.6), /* Outer glow */
+        inset 0 0 5px rgba(255, 255, 255, 0.3); /* Inner glow */
+      transform-origin: center; /* Rotate around center */
+      transition: all 0.3s; /* Smooth transition */
+    }
+    img {
+      position: absolute;
+      bottom: 50px;
+      width: 700px;
+      opacity: 0;
+      transition: all 0.3s;
+    }
+  </style>
 </head>
-
 <body>
+<div class="grid" id="lightbulbGrid"></div>
+<img src="chicago.png" alt="Beautiful lady">
 
-  <!-- Add your site or application content here -->
-  <p>Hello world! This is HTML5 Boilerplate.</p>
-  <script src="js/app.js"></script>
+<script>
+  const grid = document.getElementById('lightbulbGrid');
 
+  const rows = 18;
+  const columns = 31;
+  // Generate 200 lightbulbs
+  for (let i = 0; i < rows * columns; i++) {
+    const bulb = document.createElement('div');
+    bulb.classList.add('bulb');
+    bulb.setAttribute('data-index', i); // Assign a unique index to each bulb
+
+    // Randomize brightness
+    const brightness = 0.2 * Math.random(); // Random value between 0 and 1
+    addLight(bulb, brightness);
+
+    // Apply random rotation
+    const randomRotation = Math.random() * 360; // Random angle between 0 and 360
+    bulb.style.transform = `rotate(${randomRotation}deg)`;
+
+    // Add click event to toggle bulb on/off
+    bulb.addEventListener('click', () => {
+      toggleLightbulb(i);
+    });
+
+    grid.appendChild(bulb);
+  }
+
+  const cBulbs = [34, 33, 63, 94, 125, 157, 158];
+  const hBulbs = [36, 67, 98, 129, 160, 99, 100, 39, 70, 101, 132, 163];
+  const iBulbs = [41, 72, 103, 134, 165];
+  const c2Bulbs = [45, 44, 74, 105, 136, 168, 169];
+  const aBulbs = [171, 140, 109, 78, 48, 49, 81, 112, 143, 174, 110, 111];
+  const gBulbs = [54, 53, 83, 114, 145, 177, 178, 148, 117, 116];
+  const oBulbs = [58, 59, 91, 122, 153, 183, 182, 150, 119, 88];
+
+  function toggleLightbulb(index) {
+    const bulb = document.querySelector(`.bulb[data-index='${index}']`);
+    if (bulb) {
+      const currentOpacity = window.getComputedStyle(bulb).opacity;
+      addLight(bulb, currentOpacity > 0.2 ? 0 : 1);
+    } else {
+      console.error(`Bulb with index ${index} not found`);
+    }
+  }
+
+  function addLight(bulb, brightness) {
+    const glowStrength = (3 + brightness * 6).toFixed(1); // Randomized glow size
+    bulb.style.opacity = brightness.toFixed(2); // Adjust opacity for brightness
+    bulb.style.boxShadow = `
+        0 0 ${glowStrength}px ${(1.5 + brightness * 3).toFixed(1)}px rgba(255, 255, 200, ${brightness}),
+        inset 0 0 5px rgba(255, 255, 255, 0.3)`;
+  }
+
+  function lightUpChi() {
+    cBulbs.forEach(toggleLightbulb);
+    hBulbs.forEach(toggleLightbulb);
+    iBulbs.forEach(toggleLightbulb);
+  }
+
+  function lightUpCa() {
+    c2Bulbs.forEach(toggleLightbulb);
+    aBulbs.forEach(toggleLightbulb);
+  }
+
+  function lightUpGo() {
+    gBulbs.forEach(toggleLightbulb);
+    oBulbs.forEach(toggleLightbulb);
+  }
+
+  function showImage() {
+    document.querySelector('img').style.opacity = 1;
+    confetti({
+      particleCount: 200,  // Number of confetti particles
+      spread: 90,          // Spread angle
+      origin: { y: 0.8 }   // Confetti origin point
+    });
+  }
+
+  setTimeout(lightUpChi, 1000);
+  setTimeout(lightUpCa, 2000);
+  setTimeout(lightUpGo, 3000);
+  setTimeout(showImage, 4000);
+</script>
 </body>
-
 </html>
